@@ -9,7 +9,7 @@
 #' @examples  download_GNPS("0310e20491314ddbbf12d56b592548b4", ".")
 
 download_GNPS <- function(id, dir, overwrite = F, mgf=F){
-  if (!dir.exists(dir)) mkdir(dir)
+  if (!dir.exists(dir)) dir.create(dir)
   if (read_GNPS_dir(dir) != -1 & overwrite == F ) stop("Buckettable found in dir and overwrite = F")
   download_buckettable(id = id)
   download_edges(id = id)
