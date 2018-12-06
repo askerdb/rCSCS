@@ -9,11 +9,12 @@
 #' @examples  download_GNPS("0310e20491314ddbbf12d56b592548b4", ".")
 
 download_GNPS <- function(id, dir, overwrite = F, mgf=F){
-  if (!dir.exists(dir)) dir.create(dir)
-  if (read_GNPS_dir(dir) != -1 & overwrite == F ) stop("Buckettable found in dir and overwrite = F")
-  download_buckettable(id = id)
-  download_edges(id = id)
-  if (mgf == T) download_mgf(id = id)
+  path = file.path(paste(dir,"/",id,sep=""))
+  if (!dir.exists(path)) {dir.create(dir); dir.create(path); }
+  if (read_GNPS_dir(path)$buckettable != -1 & overwrite == F ) stop("Buckettable found in dir and overwrite = F")
+  download_buckettable(id = id,file.path(path, "buckettable.tsv"))
+  download_edges(id = id,file.path(path, "edges_file.txt"))
+  if (mgf == T) download_mgf(id = id,file.path(path, "Ions.mgf"))
 }
 
 #' Prepare the CSS matrix from an edges table
@@ -47,8 +48,11 @@ prepare_css <- function(edge_path){
 #'
 #' @examples prepare_GNPS("0310e20491314ddbbf12d56b592548b4")
 
-prepare_GNPS <- function(ID=NULL, dir = ".", select = T, overwrite=F, mgf=F){
-  if (!is.null(ID)) download_GNPS(ID, dir, overwrite, mgf)
+prepare_GNPS <- function(id=NULL, dir = ".", select = T, overwrite=F, mgf=F){
+  path = file.path(paste(dir,"/",id,sep=""))
+  if (!is.null(id)) download_GNPS(id, dir, overwrite, mgf)
+  gnps <- read_GNPS_dir(path)
+  print(gnps)
   features <- read.table(gnps$buckettable, sep = "\t", header=T, row.names=1, comment.char="")
   css <- prepare_css(gnps$edges)
   return(list(features = features, css = css))
@@ -62,14 +66,17 @@ prepare_GNPS <- function(ID=NULL, dir = ".", select = T, overwrite=F, mgf=F){
 #' @export
 #'
 #' @examples
-read_GNPS_dir <- function(dir = "."){
+#'
+read_GNPS_dir <- function(ID, dir = "."){
   files <- Sys.glob(file.path(paste(dir,"/",ID,sep=""), "*"))
   netattr <- list.files(grep("clusterinfosummarygroup_attributes_withIDs_withcomponentID", files, value = T), full.names = T)
-  buckettable <- grep("download_cluster_buckettable-main.tsv", files, value = T)
-  if (lenght(buckettable) == 0) return(-1)
-  edges <- list.files(grep("networkedges_selfloop", files, value = T), full.names = T)
-  ids <- list.files(paste(dir,"/",ID,"/","clusterinfosummarygroup_attributes_withIDs",sep=""), full.names = T)
-  return(list(buckettable = buckettable, edges = edges, attr = netattr, ids = ids))
+  print(files)
+  buckettable <- grep("buckettable.tsv", files, value = T)
+  edges <- grep("edges_file.txt", files, value = T)
+  if (length(buckettable) == 0) return(list(buckettable = -1))
+  print(edges)
+  #ids <- list.files(paste(dir,"/",ID,"/","clusterinfosummarygroup_attributes_withIDs",sep=""), full.names = T)
+  return(list(buckettable = buckettable, edges = edges, attr = netattr))#, ids = ids))
 }
 
 #' Download buckettable from GNPS
@@ -81,7 +88,7 @@ read_GNPS_dir <- function(dir = "."){
 #'
 #' @examples
 #'
-download_buckettable <- function(id, path = "buckettable.csv"){
+download_buckettable <- function(id, path = "buckettable.tsv"){
   file = paste0("http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=",id,"&block=main&file=cluster_buckets/")
   download_file(file, path)
 }
@@ -96,7 +103,7 @@ download_buckettable <- function(id, path = "buckettable.csv"){
 #' @examples
 #'
 
-download_edges <- function(id, path = "edges.txt"){
+download_edges <- function(id, path = "edges_file.txt"){
   file = paste0("http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=",id,"&block=main&file=networkedges_selfloop/")
   download_file(file, path)
 }
