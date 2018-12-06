@@ -52,7 +52,6 @@ prepare_GNPS <- function(id=NULL, dir = ".", select = T, overwrite=F, mgf=F){
   path = file.path(paste(dir,"/",id,sep=""))
   if (!is.null(id)) download_GNPS(id, dir, overwrite, mgf)
   gnps <- read_GNPS_dir(path)
-  print(gnps)
   features <- read.table(gnps$buckettable, sep = "\t", header=T, row.names=1, comment.char="")
   css <- prepare_css(gnps$edges)
   return(list(features = features, css = css))
@@ -70,11 +69,9 @@ prepare_GNPS <- function(id=NULL, dir = ".", select = T, overwrite=F, mgf=F){
 read_GNPS_dir <- function(ID, dir = "."){
   files <- Sys.glob(file.path(paste(dir,"/",ID,sep=""), "*"))
   netattr <- list.files(grep("clusterinfosummarygroup_attributes_withIDs_withcomponentID", files, value = T), full.names = T)
-  print(files)
   buckettable <- grep("buckettable.tsv", files, value = T)
   edges <- grep("edges_file.txt", files, value = T)
   if (length(buckettable) == 0) return(list(buckettable = -1))
-  print(edges)
   #ids <- list.files(paste(dir,"/",ID,"/","clusterinfosummarygroup_attributes_withIDs",sep=""), full.names = T)
   return(list(buckettable = buckettable, edges = edges, attr = netattr))#, ids = ids))
 }
