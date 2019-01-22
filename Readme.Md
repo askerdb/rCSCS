@@ -1,6 +1,10 @@
+### Install
+
 Install with:
 
  `devtools::install_github("askerdb/rCSCS")`
+
+### Example
 
 Example data with fecal samples of Crohns diseased children (CD) and Healthy children (HC), run in both positive and negative ionisation mode
 
