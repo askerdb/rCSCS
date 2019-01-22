@@ -6,7 +6,7 @@ Install with:
 
 ### Example
 
-Example data with fecal samples of Crohns diseased children (CD) and Healthy children (HC), run in both positive and negative ionisation mode
+Example data with fecal samples of Crohns diseased children (CD) and Healthy children (HC), run in both positive and negative ionisation mode (MassIVE ID: MSV000081120)
 
 (requires the packages rCSCS, ape, and ggplot2)
 ```R
