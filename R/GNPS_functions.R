@@ -28,7 +28,7 @@ download_GNPS <- function(id, dir, overwrite = F, mgf=F){
 #' @import igraph
 
 prepare_css <- function(edge_path){
-  csslong <- read.table(edge_path, header=T)
+  csslong <- read.table(edge_path, header=T, sep = "\t")
   g <- igraph::graph.data.frame(csslong, directed=FALSE)
   css <- igraph::get.adjacency(g, attr="Cosine", sparse=FALSE)
   diag(css) <- 1
