@@ -86,7 +86,8 @@ read_GNPS_dir <- function(ID, dir = "."){
 #' @examples
 #'
 download_buckettable <- function(id, path = "buckettable.tsv"){
-  file = paste0("http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=",id,"&block=main&file=cluster_buckets/")
+  #file = paste0("http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=",id,"&block=main&file=cluster_buckets/") #Old buckettable format
+  file = paste0("http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=", id, "&block=main&file=quantification_table_reformatted/")
   download_file(file, path)
 }
 
