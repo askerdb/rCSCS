@@ -52,9 +52,11 @@ prepare_GNPS <- function(id=NULL, dir = ".", select = T, overwrite=F, mgf=F){
   path = file.path(paste(dir,"/",id,sep=""))
   if (!is.null(id)) download_GNPS(id, dir, overwrite, mgf)
   gnps <- read_GNPS_dir(path)
-  features <- read.table(gnps$buckettable, sep = "\t", header=T, row.names=1, comment.char="")
+  features <- read.table(gnps$buckettable,  sep = ",", header=T, row.names=1, 
+                         comment.char="", quote = "", stringsAsFactors = F)
+  
   css <- prepare_css(gnps$edges)
-  return(list(features = features, css = css))
+  return(list(features = features[,-(1:9)], css = css, rt = features$row.retention.time, mz = features$row.m.z))
 }
 
 #' Read a previously downloaded GNPS dir
@@ -68,12 +70,10 @@ prepare_GNPS <- function(id=NULL, dir = ".", select = T, overwrite=F, mgf=F){
 #'
 read_GNPS_dir <- function(ID, dir = "."){
   files <- Sys.glob(file.path(paste(dir,"/",ID,sep=""), "*"))
-  netattr <- list.files(grep("clusterinfosummarygroup_attributes_withIDs_withcomponentID", files, value = T), full.names = T)
   buckettable <- grep("buckettable.tsv", files, value = T)
   edges <- grep("edges_file.txt", files, value = T)
   if (length(buckettable) == 0) return(list(buckettable = -1))
-  #ids <- list.files(paste(dir,"/",ID,"/","clusterinfosummarygroup_attributes_withIDs",sep=""), full.names = T)
-  return(list(buckettable = buckettable, edges = edges, attr = netattr))#, ids = ids))
+  return(list(buckettable = buckettable, edges = edges))
 }
 
 #' Download buckettable from GNPS
